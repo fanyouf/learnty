@@ -366,7 +366,7 @@ wathchedBrowerify.on("log",gutil.log)
 #### 安装 live-server
 live-server与我们上面介绍的typescript，gulp都没有关系。 你只需要全局安装live-server。然后进入dist目录，运行live-server即可看到效果。
 
-它的[npm地址](!https://www.npmjs.com/package/live-server)
+它的[npm地址](https://www.npmjs.com/package/live-server)
 ```
 npm install -g live-server
 cd dist
