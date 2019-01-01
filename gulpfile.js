@@ -6,12 +6,15 @@ let tsify = require("tsify");
 let watchify = require("watchify")
 let gutil = require("gulp-util")
 
+var ts = require("gulp-typescript");
+var tsProject = ts.createProject("tsconfig.json");
+
 const less = require('gulp-less')
 
 var wathchedBrowerify = watchify(browserify({
     basedir:"",
     debug:true,
-    entries:["src/main.ts"],
+    entries:["src/ts/main.ts"],
     cache:{},
     packageCache:{}
 })).plugin(tsify)
@@ -30,6 +33,10 @@ gulp.task("copy-html",function(){
     return gulp.src(paths.pages).pipe(gulp.dest("dist"))
 });
 function bundle(){
+    tsProject.src()
+        .pipe(tsProject())
+        .js.pipe(gulp.dest("dist/_js"));
+
     return wathchedBrowerify.bundle().pipe(source('bundle.js'))
     .pipe(gulp.dest("dist"));
 }
