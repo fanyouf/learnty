@@ -8,8 +8,33 @@
     <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
-    <h1>typscript + gu111</h1>
-    <p id="greeting">loading..</p>
+    <div class="main">
+        <h1>计算器*</h1>
+        <div>
+            <button>+</button>
+            <button>-</button>
+            <button>*</button>
+            <button>/</button>
+        </div>
+        <div id="scoreArea">
+            <div id="subjectStatus" class="subjectStatus">
+               
+            </div>
+        </div>
+        <div id="ans" class="ansArea">
+            <label for="" id="op1">1</label>
+            <label for="" id="opSymbol">*</label>
+            <label for="" id="op2">2</label>
+            <label for="" id="opEqual">=</label>
+            <input class="ansbox" id="ansBox" type="text">
+        </div>
+        <div id="btnArea">
+            <button id="getNext">下一题</button>
+            <button>结束</button>
+        </div>
+    </div>
+    
+
     <script src="bundle.js"></script>
 </body>
 </html>

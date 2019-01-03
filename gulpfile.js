@@ -11,7 +11,7 @@ const less = require('gulp-less')
 var wathchedBrowerify = watchify(browserify({
     basedir:"",
     debug:true,
-    entries:["src/main.ts"],
+    entries:["src/ts/main.ts"],
     cache:{},
     packageCache:{}
 })).plugin(tsify)
@@ -30,6 +30,7 @@ gulp.task("copy-html",function(){
     return gulp.src(paths.pages).pipe(gulp.dest("dist"))
 });
 function bundle(){
+    console.info("budler.............")
     return wathchedBrowerify.bundle().pipe(source('bundle.js'))
     .pipe(gulp.dest("dist"));
 }
