@@ -1,64 +1,111 @@
-import SubjectBuilder from './SubjectBuilder'
-import  {OPSYSMBOL,Subject} from "./interface"
+let ab = require( "./interface")
 
-window.onload = function(){
-    const subjects = new SubjectBuilder(OPSYSMBOL.ADD,3);
-    let opSymbol = document.getElementById("opSymbol");
-    let op1 = document.getElementById("op1");
-    let op2 = document.getElementById("op2");
-    
-    const updateSubject=(curSubject:Subject)=>{
-        opSymbol.innerHTML = curSubject.op.toString();
-        op1.innerHTML = curSubject.op1.toString()
-        op2.innerHTML = curSubject.op2.toString()
-    }
+console.info(ab)
+const max_fireworks :number = 5,
+        max_sparks:number = 50
 
-    const initSubjectStatus=(subjectList:SubjectBuilder)=>{
-        let doc = document.getElementById("subjectStatus");
-        let resultMap = subjectList.list.map((item,index)=>{
-            let span = document.createElement("span");
-            span.className="normal";
-            doc.appendChild(span);
+      let canvas:HTMLCanvasElement = document.getElementById('myCanvas')
+
+      let context = canvas.getContext('2d')
+
+      let fireworks:Array<Spark> = []
+
+      for (let i = 0; i < max_fireworks; i++) {
+        let firework = {
+          sparks: []
+        }
+
+        for (let n = 0; n < max_sparks; n++) {
+          let spark:Spark = {
+            vx: Math.random() * 5 + 0.5,
+
+            vy: Math.random() * 5 + 0.5,
+
+            weight: Math.random() * 0.3 + 0.03,
+
+            red: Math.floor(Math.random() * 2),
+
+            green: Math.floor(Math.random() * 2),
+
+            blue: Math.floor(Math.random() * 2)
+          }
+
+          if (Math.random() > 0.5) spark.vx = -spark.vx
+
+          if (Math.random() > 0.5) spark.vy = -spark.vy
+
+          firework.sparks.push(spark)
+        }
+
+        fireworks.push(firework)
+
+        resetFirework(firework)
+      }
+
+      window.requestAnimationFrame(explode)
+
+      function resetFirework(firework) {
+        firework.x = Math.floor(Math.random() * canvas.width)
+
+        firework.y = canvas.height
+
+        firework.age = 0
+
+        firework.phase = 'fly'
+      }
+
+      function explode() {
+        context.clearRect(0, 0, canvas.width, canvas.height)
+
+        fireworks.forEach((firework, index) => {
+          if (firework.phase == 'explode') {
+            firework.sparks.forEach(spark => {
+              for (let i = 0; i < 10; i++) {
+                let trailAge = firework.age + i
+
+                let x = firework.x + spark.vx * trailAge
+
+                let y = firework.y + spark.vy * trailAge + spark.weight * trailAge * spark.weight * trailAge
+
+                let fade = i * 20 - firework.age * 2
+
+                let r = Math.floor(spark.red * fade)
+
+                let g = Math.floor(spark.green * fade)
+
+                let b = Math.floor(spark.blue * fade)
+
+                context.beginPath()
+
+                context.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',1)'
+
+                context.rect(x, y, 4, 4)
+
+                context.fill()
+              }
+            })
+
+            firework.age++
+
+            if (firework.age > 100 && Math.random() < 0.05) {
+              resetFirework(firework)
+            }
+          } else {
+            firework.y = firework.y - 10
+
+            for (let spark = 0; spark < 15; spark++) {
+              context.beginPath()
+
+              context.fillStyle = 'rgba(' + index * 50 + ',' + spark * 17 + ',0,1)'
+
+              context.rect(firework.x + Math.random() * spark - spark / 2, firework.y + spark * 4, 4, 4)
+
+              context.fill()
+            }
+
+            if (Math.random() < 0.001 || firework.y < 200) firework.phase = 'explode'
+          }
         })
-    }
 
-    const updateSubjectStatus=(subjectList:SubjectBuilder)=>{
-        let doc = document.getElementById("subjectStatus");
-        let rs = doc.querySelectorAll("span");
-        // console.info(rs)
-
-        let index = subjectList.currentIndex -1 ;
-        rs[index].className = subjectList.list[subjectList.currentIndex-1].isRight ? "yes" :"no"
-
-
-    }
-    let curSubject = subjects.getSubject();
-
-    updateSubject(curSubject);
-    initSubjectStatus(subjects)
-
-    document.getElementById("ansBox").focus()
-
-
-    document.getElementById("getNext").addEventListener("click",()=>{
-        let rs = parseInt( document.getElementById("ansBox").value );
-
-        console.info(rs)
-        curSubject.setAns(rs)
-        updateSubjectStatus(subjects)
-        
-        console.info(curSubject);
-        
-        curSubject = subjects.getSubject();
-        if(curSubject){
-            
-            document.getElementById("ansBox").value = ''
-            document.getElementById("ansBox").focus()
-            updateSubject(curSubject);
-        }
-        else{
-            document.getElementById("getNext").style.display = "none"
-        }
-    
-    })
-}
+        window.requestAnimationFrame(explode)
+      }

@@ -1,57 +1,7 @@
 body {
-  color: #000;
-  font-size: 40px;
-  background-color: #ccc;
+  background-color: #000;
 }
-body .main {
-  text-align: center;
-  margin: 10px auto;
-  padding: 10px;
-  background-color: #fff;
-}
-body .main h1 {
-  color: blue;
-  font-size: 32px;
-}
-body .main .ansArea {
-  font-size: 40px;
-}
-body .main .ansbox {
-  width: 80px;
-  height: 40px;
-  font-size: 40px;
-}
-body .main .subjectStatus {
-  line-height: 40px;
-  vertical-align: top;
-}
-body .main .subjectStatus span {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  border-radius: 50%;
-  background-color: #ccc;
-  margin: 2px;
-  position: relative;
-}
-body .main .subjectStatus span::after {
-  color: #FFF;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  font-size: 0.8em;
-  transform: translate(-50%, -50%);
-}
-body .main .subjectStatus .yes::after {
-  content: "V";
-  color: #00F;
-}
-body .main .subjectStatus .no::after {
-  content: "X";
-  color: #F00;
-}
-body .main .subjectStatus .normal::after {
-  content: "?";
-  color: #FFF;
+body #myCanvas {
+  margin: 50px auto;
+  display: block;
 }

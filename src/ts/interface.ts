@@ -1,14 +1,16 @@
-enum OPSYSMBOL {
-    ADD ="+",
-    SUB="-",
-    MUL="*",
-    DIV="/"
-}
-interface Subject{
-    op1:number,
-    op2:number,
-    op:OPSYSMBOL,
-    ans:number
+
+interface Spark{
+    vx: number,
+
+        vy: number,
+
+        weight:number,
+
+        red:number,
+
+        green:number,
+
+        blue:number
 }
 
-export {OPSYSMBOL, Subject}
+export default  Spark
