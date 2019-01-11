@@ -1,7 +1,11 @@
 body {
-  background-color: #000;
+  background-color: #fff;
+}
+body h1 {
+  color: #fff;
 }
 body #myCanvas {
   margin: 50px auto;
   display: block;
+  background-color: #000;
 }

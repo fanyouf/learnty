@@ -1,16 +1,10 @@
-
-interface Spark{
-    vx: number,
-
-        vy: number,
-
-        weight:number,
-
-        red:number,
-
-        green:number,
-
-        blue:number
+interface ACTOR {
+    run:(context,firework?)=>void
 }
 
-export default  Spark
+enum PHASE{
+    expolde="expolde",
+    rise="rise"
+}
+
+export { ACTOR,PHASE}
