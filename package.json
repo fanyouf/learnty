@@ -4,7 +4,7 @@
   "description": "what 's typerscript",
   "main": "index.js",
   "scripts": {
-    "gulp" :"gulp",
+    "gulp": "gulp",
     "start": "cd dist && live-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
