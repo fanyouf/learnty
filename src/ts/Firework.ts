@@ -1,7 +1,7 @@
 
 import {PHASE,ACTOR} from "./interface";
 import {R,G} from "./util"
-import Spark from "./Spark"
+import Spark from "./Block"
 class Firework implements ACTOR {
     phase:PHASE
     x:number
