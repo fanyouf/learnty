@@ -1,27 +1,35 @@
 interface BlOCK_T {
-  moveLeft: () => Array<POINT_T>;
-  canMoveLeft: (any) => Boolean;
-  moveRight: () => Array<POINT_T>;
-  moveDown: (Number) => Boolean;
-  change: () => Array<POINT_T>;
-  isGoBottom: (Number) => Boolean;
-  x: number;
-  y: number;
-  matrix: Array<POINT_T>;
-  type: BLOCK_TYPE_T;
-  getMatrix: (dir?: String) => Array<POINT_T>;
+    canMoveLeft: (BGBlocks_T) => Boolean;
+    canMoveRight: (BGBlocks_T) => Boolean;
+    canMoveDown: (BGBlocks_T) => Boolean;
+    canMoveChange: (BGBlocks_T) => Boolean;
+    
+    moveLeft: (BGBlocks_T) => boolean;
+    moveRight: (BGBlocks_T) => boolean;
+    moveDown: (BGBlocks_T) => boolean;
+    moveChange: (BGBlocks_T) => boolean;
+
+    x: number;
+    y: number;
+    pointList: Array<POINT_T>;
+
+    getMatrix: (dir?: String) => Array<POINT_T>;
 }
+
+interface BGBlocks_T{
+
+}
+
+interface Actor {
+  draw :(CanvasRenderingContext2D) =>void
+}
+
 
 interface POINT_T {
   x: number;
   y: number;
 }
 
-enum BLOCK_TYPE_T {
-  L = "L",
-  N = "N",
-  Z = "Z",
-  O = "O"
-}
 
-export { BlOCK_T, BLOCK_TYPE_T, POINT_T };
+
+export { BlOCK_T, POINT_T,Actor};

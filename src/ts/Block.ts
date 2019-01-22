@@ -1,49 +1,64 @@
+import { BlOCK_T, POINT_T,Actor } from "./interface";
+import BackGroundBlocks from "./BackGroundBlock";
+import {getBlockShape} from "./blockConfig"
+import EventCenter from "./EventCenter"
+class Block implements Actor {
+  pointList: Array<POINT_T> = [];
+  index = 0;
+  unitBlockh:number = 10;
+  unitBlockw:number = 10;
 
-import {BLOCK_TYPE_T,BlOCK_T} from "./interface"
+  x = 0;
+  y = 0;
+  block_shape_point_list = [];
 
-import {R,G} from "./util"
-const BLOCK_TYPE_T_L = [
-    [0,0,1,0,0],
-    [0,0,1,0,0],
-    [0,0,1,0,0],
-    [0,0,1,0,0],
-    [0,0,0,0,0]
-]
-const BLOCK_TYPE_T_O = [
-    [0,0,0,0,0],
-    [0,1,1,0,0],
-    [0,1,1,0,0],
-    [0,0,0,0,0],
-    [0,0,0,0,0]
-]
+  constructor({unitBlockw,unitBlockh}) {
+    this.unitBlockw =unitBlockw;
+    this.unitBlockh =unitBlockh;
 
-const BLOCK_TYPE_T_N = [
-    [0,0,1],
-    [0,1,1],
-    [0,1,0]
-]
+    let  index = Math.floor(Math.random() * 5)
 
+    let initx = 0
 
-const BLOCK_TYPE_T_Z = [
-    [1,0,0],
-    [1,1,0],
-    [0,1,0]
-]
+    this.x = initx
+    this.block_shape_point_list = getBlockShape()
+    this.index = index % this.block_shape_point_list.length;
+    this.pointList = this.block_shape_point_list[this.index];
+    console.info("constructor....");
+    EventCenter.addEventListener("changeShape",this.handleChangeShape.bind(this))
 
-class BlOCK implements BlOCK {
-    x:number
-    y:number
-   
+  }
+  handleChangeShape({index,pointList}){
+    this.x = 0;
+    this.y = 0;
+    this.index = index;
+    this.pointList = pointList
+  }
 
-    constructor(t:BLOCK_TYPE_T){
-        
-    }
-    
-    run(context,firework){
-        this[firework.phase](context,firework)
-       
-    }
+  reset(){
+    this.x = 3;
+    this.y = 0
+  }
+  getMatrix(dir: string = "") {
+    return this.pointList.map(item => {
+      let o = { x: 0, y: 0 };
+      o.x = item.x + this.x;
+      o.y = item.y + this.y;
+      o.x = dir === "left" ? o.x - 1 : o.x;
+      o.x = dir === "right" ? o.x + 1 : o.x;
+      o.y = dir === "down" ? o.y +1 : o.y;
+      return o;
+    });
+  }
+  
+  draw(ctx:CanvasRenderingContext2D){
+      ctx.fillStyle = "green";
+      this.getMatrix().forEach(item => {
+        ctx.fillRect(item.x * this.unitBlockw, item.y * this.unitBlockw, this.unitBlockw-1, this.unitBlockw-1);
+      });
+  }
+  
+  
 }
 
-export default Spark
-
+export default Block;

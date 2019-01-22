@@ -1,88 +1,127 @@
-import BlockL from "./BlockL";
+import Block from "./Block";
 import { BlOCK_T } from "./interface";
 import BGBlocks from "./BackGroundBlock";
+import NextBlock from "./NextBlock"
+import EVENT_BUS from "./EventCenter"
+import Score from "./Score"
+import BlockManage from "./BlockManange"
 const Game = (function() {
   let game = null;
   class _Game {
     frameIndex: number = 0;
-    maxX: number;
-    maxY: number;
-    context: null;
-    curBlock: BlOCK_T;
-    bgBlocks: BGBlocks;
+    maxNumberX: number;
+    maxNumberY: number;
+    areaWidth: number;
+    areaHeight: number;
+    unitBlockw:number;
 
-    constructor({ context, maxX, maxY }) {
+    unitBlockh:number;
+    context: CanvasRenderingContext2D;
+    curBlock: Block;
+    nexBlock:NextBlock;
+    score:Score;
+    bgBlocks: BGBlocks;
+    timerId:number;
+    status:string = "normal";
+
+    constructor({ context, maxNumberX, maxNumberY,areaWidth,areaHeight }) {
+
       if (!game) {
         game = this;
       }
-      game.addEventListener();
-      //   console.info(context);
-      game.context = context;
-      game.maxX = maxX;
-      game.maxY = maxY;
+      document.addEventListener("keyup", this.eventKeyUp.bind(this));
 
-      game.curBlock = new BlockL();
-      game.bgBlocks = new BGBlocks({ maxX, maxY });
+      game.context = context;
+      game.maxNumberX = maxNumberX;
+      game.maxNumberY = maxNumberY;
+      game.areaWidth = areaWidth;
+      game.areaHeight = areaHeight;
+      game.unitBlockh = areaHeight / maxNumberY
+      game.unitBlockw = areaWidth / maxNumberX
+      game.nexBlock = new NextBlock({unitBlockw:game.unitBlockw,unitBlockh:game.unitBlockh})
+      game.curBlock = new Block({unitBlockw:game.unitBlockw,unitBlockh:game.unitBlockh});
+      game.bgBlocks = new BGBlocks({ maxNumberX, maxNumberY,unitBlockw:game.unitBlockw,unitBlockh:game.unitBlockh });
+
+      game.score = new Score()
+
+      EVENT_BUS.addEventListener("gameover",game.gameover.bind(game))
+      EVENT_BUS.addEventListener("merge",game.handleMerge.bind(game))
+      
 
       return game;
     }
 
     eventKeyUp(e) {
-      let _this = this;
       console.info(e);
       if (e.keyCode === 38) {
-        _this.curBlock.change();
+        EVENT_BUS.fire("moveChange",this.curBlock)
+        // _this.curBlock.moveChange(_this.bgBlocks);
       } else if (e.keyCode === 39) {
-        _this.curBlock.moveRight();
+        EVENT_BUS.fire("moveRight",this.curBlock)
+      //  _this.curBlock.moveRight(_this.bgBlocks);
       } else if (e.keyCode === 37) {
-        if (_this.curBlock.canMoveLeft(_this.bgBlocks)) {
-          _this.curBlock.moveLeft();
-        }
+        EVENT_BUS.fire("moveLeft",this.curBlock)
+        // _this.curBlock.moveLeft(_this.bgBlocks);
+      } else if(e.keyCode === 13){
+        EVENT_BUS.fire("reStart")
       }
     }
-    addEventListener() {
-      document.addEventListener("keyup", this.eventKeyUp.bind(this));
+
+    
+    reStart(){
+        if(this.status === "gameover"){
+            this.status = "normal"
+            // this.curBlock = new Block()
+            // this.bgBlocks = new BGBlocks({ maxNumberX:this.maxNumberX,maxNumberY:this.maxNumberY})
+            this.start()
+        }
     }
-    drawCurBlock() {
-      let ctx = this.context;
-      ctx.fillStyle = "green";
-      this.curBlock.getMatrix().forEach(item => {
-        ctx.fillRect(item.x * 10, item.y * 10, 9, 9);
-      });
+    handleMerge(){
+      // this.curBlock.reset()
     }
-    drawBGBlocks() {
-      let ctx = this.context;
-      ctx.fillStyle = "green";
-      this.bgBlocks.matrix.forEach((row, y) => {
-        row.forEach((val, x) => {
-          val && ctx.fillRect(x * 10, y * 10, 9, 9);
-        });
-      });
+
+    drawNextBlock(){
+      let block = BlockManage.getNext();
+      let dx = 400;
+      let dy = 40;
+      this.context.fillStyle = "green";
+      block.pointList.forEach(point=>{
+        let {x,y} = point;
+        this.context.fillRect(dx+x * this.unitBlockw/2,dy+ y * this.unitBlockh/2, (this.unitBlockw-1)/2, (this.unitBlockh-1)/2);
+
+      })
     }
+
+    drawScore(){
+      let cxt = this.context;
+      cxt.strokeStyle = "#fff";
+      cxt.font = 'bold 30px consolas';
+      cxt.fillText("分数:"+this.score.mark.toString(), 450 , 100);
+      console.info("分数:"+this.score.mark.toString())
+    }
+
+
     start() {
       this.frameIndex++;
-      this.context.clearRect(
-        0,
-        0,
-        this.context.canvas.width,
-        this.context.canvas.height
-      );
+      let cxt = this.context
+      cxt.clearRect(0,0,cxt.canvas.width,cxt.canvas.height);
       //   console.info(this.frameIndex);
-      if (this.frameIndex % Math.ceil(1000 / 50) === 0) {
-        if (this.bgBlocks.isCrash(this.curBlock)) {
-          this.bgBlocks.merge(this.curBlock);
-          this.curBlock = new BlockL();
-        } else {
-          if (this.curBlock.moveDown(this.maxY)) {
-          } else {
-            this.bgBlocks.merge(this.curBlock);
-            this.curBlock = new BlockL();
-          }
-        }
+      if (this.frameIndex % Math.ceil(1000/50) === 0) {
+
+        this.bgBlocks.moveDown(this.curBlock)
+        
       }
-      this.drawCurBlock();
-      this.drawBGBlocks();
-      requestAnimationFrame(this.start.bind(this));
+      this.curBlock.draw(this.context)
+      this.nexBlock.draw(this.context)
+      this.bgBlocks.draw(this.context)
+      this.drawScore()
+      if(this.status === "normal")
+        this.timerId = requestAnimationFrame(this.start.bind(this));
+    //   console.info(this.timerId)
+    }
+
+    gameover(){
+        this.status = "gameover"
     }
   }
 

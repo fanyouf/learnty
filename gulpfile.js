@@ -1,14 +1,11 @@
-let gulp = require("gulp")
-
-let browserify =require("browserify")
-let source = require("vinyl-source-stream")
-let tsify = require("tsify");
-let watchify = require("watchify")
-let gutil = require("gulp-util")
-
+const gulp = require("gulp")
+const browserify =require("browserify")
+const source = require("vinyl-source-stream")
+const tsify = require("tsify");
+const watchify = require("watchify")
+const gutil = require("gulp-util")
 const less = require('gulp-less')
-
-var wathchedBrowerify = watchify(browserify({
+const wathchedBrowerify = watchify(browserify({
     basedir:"",
     debug:true,
     entries:["src/ts/main.ts"],
@@ -16,18 +13,12 @@ var wathchedBrowerify = watchify(browserify({
     packageCache:{}
 })).plugin(tsify)
 
-let paths = {
-    pages:["src/*.html"]
-}
-
 gulp.task('less', function () {
     return gulp.src('src/less/**/*.less')
-      .pipe(less())
-      .pipe(gulp.dest('dist/css'));
-  });
-
+        .pipe(less()).pipe(gulp.dest('dist/css'));
+});
 gulp.task("copy-html",function(){
-    return gulp.src(paths.pages).pipe(gulp.dest("dist"))
+    return gulp.src(["src/*.html"]).pipe(gulp.dest("dist"))
 });
 function bundle(){
     console.info("budler.............")
@@ -35,7 +26,6 @@ function bundle(){
     .pipe(gulp.dest("dist"));
 }
 gulp.task("default",gulp.series("copy-html","less",bundle));
-
 gulp.watch(['src/less/*.less','src/index.html'], gulp.series('less','copy-html'));
 
 wathchedBrowerify.on("update",bundle);
