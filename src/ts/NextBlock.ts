@@ -1,44 +1,57 @@
 import EVENT_BUS from "./EventCenter";
-import {Actor,POINT_T} from "./interface"
-import {getBlockShape} from "./blockConfig"
-class NextBlock implements Actor{
-    pointList: Array<POINT_T> = [];
-    block_shape_point_list = []
-    index:number = 0;
-    unitBlockw:number;
-    unitBlockh:number;
-    constructor({unitBlockw,unitBlockh}){
-        this.unitBlockw = unitBlockw;
-        this.unitBlockh = unitBlockh;
-        let  index = Math.floor(Math.random() * 100)
+import { Actor, POINT_T } from "./interface";
+import { getBlockShape } from "./blockConfig";
+class NextBlock implements Actor {
+  pointList: Array<POINT_T> = [];
+  block_shape_point_list = [];
+  index: number = 0;
+  unitBlockw: number;
+  unitBlockh: number;
+  constructor({ unitBlockw, unitBlockh }) {
+    this.unitBlockw = unitBlockw;
+    this.unitBlockh = unitBlockh;
+    this.block_shape_point_list = getBlockShape();
 
-        this.block_shape_point_list = getBlockShape()
-        this.index = index % this.block_shape_point_list.length;
-        this.pointList = this.block_shape_point_list[this.index];
+    let index = Math.floor(Math.random() * 100);
+    this.index = index % this.block_shape_point_list.length;
+    this.pointList = this.block_shape_point_list[this.index];
 
-        EVENT_BUS.addEventListener("merge",this.change.bind(this))
-    }
+    EVENT_BUS.addEventListener("event_merge", this.change.bind(this));
+  }
 
+  draw(ctx: CanvasRenderingContext2D) {
+    let dx = 400;
+    let dy = 40;
+    ctx.fillStyle = "green";
+    this.pointList.forEach(point => {
+      let { x, y } = point;
+      ctx.fillRect(
+        dx + (x * this.unitBlockw) / 2,
+        dy + (y * this.unitBlockh) / 2,
+        (this.unitBlockw - 1) / 2,
+        (this.unitBlockh - 1) / 2
+      );
+    });
+  }
+  change() {
+    console.info("nextBlock.... change()....");
 
-    draw(ctx:CanvasRenderingContext2D){
+    let payload = {
+      index: this.index,
+      block_shape_point_list: JSON.parse(
+        JSON.stringify(this.block_shape_point_list)
+      )
+    };
+    console.info("fire...changeShape....", payload);
+    EVENT_BUS.fire("changeShape", payload);
 
-     let dx = 400;
-      let dy = 40;
-      ctx.fillStyle = "green";
-      this.pointList.forEach(point=>{
-        let {x,y} = point;
-        ctx.fillRect(dx+x * this.unitBlockw/2,dy+ y * this.unitBlockh/2, (this.unitBlockw-1)/2, (this.unitBlockh-1)/2);
+    this.block_shape_point_list = getBlockShape();
 
-      })
-
-    }
-    change(){
-        EVENT_BUS.fire("changeShape",{index:this.index,pointList:JSON.parse(JSON.stringify(this.pointList))})
-
-        let  index = Math.floor(Math.random() * 100)
-        this.index = index % this.block_shape_point_list.length;
-        this.pointList = this.block_shape_point_list[this.index];
-    }
+    let index = Math.floor(Math.random() * 100);
+    this.index = index % this.block_shape_point_list.length;
+    this.pointList = this.block_shape_point_list[this.index];
+    console.info("nextBlock...", this.index, this.pointList);
+  }
 }
 
 export default NextBlock;
