@@ -1,4 +1,4 @@
-import { BlOCK_T, POINT_T, Actor } from "./interface";
+import { BlOCK_T, POINT_T, Actor, EVENTTYPE } from "./interface";
 import { getBlockShape } from "./blockConfig";
 import EventCenter from "./EventCenter";
 class Block implements Actor {
@@ -23,7 +23,7 @@ class Block implements Actor {
     this.index = index % this.block_shape_point_list.length;
     this.pointList = this.block_shape_point_list[this.index];
     EventCenter.addEventListener(
-      "changeShape",
+      EVENTTYPE.changeShape,
       this.handleChangeShape.bind(this)
     );
   }

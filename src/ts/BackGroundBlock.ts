@@ -1,4 +1,4 @@
-import { Actor, POINT_T } from "./interface";
+import { Actor, POINT_T, EVENTTYPE } from "./interface";
 import Block from "./Block";
 import EVENT_CENTER from "./EventCenter";
 class BGBlocks implements Actor {
@@ -17,9 +17,15 @@ class BGBlocks implements Actor {
       this.matrix.push(arr);
     }
 
-    EVENT_CENTER.addEventListener("moveRight", this.moveRight.bind(this));
-    EVENT_CENTER.addEventListener("moveLeft", this.moveLeft.bind(this));
-    EVENT_CENTER.addEventListener("moveChange", this.moveChange.bind(this));
+    EVENT_CENTER.addEventListener(
+      EVENTTYPE.moveRight,
+      this.moveRight.bind(this)
+    );
+    EVENT_CENTER.addEventListener(EVENTTYPE.moveLeft, this.moveLeft.bind(this));
+    EVENT_CENTER.addEventListener(
+      EVENTTYPE.moveChange,
+      this.moveChange.bind(this)
+    );
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -93,9 +99,9 @@ class BGBlocks implements Actor {
     } else {
       console.info("merge,and fire Event_merge...");
       this.merge(block);
-      EVENT_CENTER.fire("event_merge");
+      EVENT_CENTER.fire(EVENTTYPE.merge);
       if (this.isGameover()) {
-        console.info();
+        EVENT_CENTER.fire("changeStatus", "gameover");
       }
     }
   }
@@ -111,10 +117,8 @@ class BGBlocks implements Actor {
 
   isGameover() {
     let rs = this.matrix[0].find(item => item > 0);
-    if (rs) {
-      EVENT_CENTER.fire("gameover");
-    }
-    return true;
+
+    return !!rs;
   }
 
   isCrash(block: Block) {
@@ -157,19 +161,17 @@ class BGBlocks implements Actor {
     if (rowIndexs.length === 0) return false;
 
     if (rowIndexs.length === 1) {
-      EVENT_CENTER.fire("addScore", 100);
+      EVENT_CENTER.fire(EVENTTYPE.addScore, 100);
     } else if (rowIndexs.length === 2) {
-      EVENT_CENTER.fire("addScore", 250);
+      EVENT_CENTER.fire(EVENTTYPE.addScore, 250);
     } else if (rowIndexs.length === 3) {
-      EVENT_CENTER.fire("addScore", 400);
+      EVENT_CENTER.fire(EVENTTYPE.addScore, 400);
     }
 
     rowIndexs.forEach(valIndex => {
       this.matrix.splice(valIndex, 1);
       this.matrix.unshift(new Array(this.maxNumberX).fill(0));
     });
-
-    EVENT_CENTER.fire("getScore");
     return true;
   }
 }

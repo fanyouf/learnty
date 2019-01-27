@@ -1,5 +1,5 @@
 import EVENT_BUS from "./EventCenter";
-import { Actor, POINT_T } from "./interface";
+import { Actor, POINT_T, EVENTTYPE } from "./interface";
 import { getBlockShape } from "./blockConfig";
 class NextBlock implements Actor {
   pointList: Array<POINT_T> = [];
@@ -16,7 +16,7 @@ class NextBlock implements Actor {
     this.index = index % this.block_shape_point_list.length;
     this.pointList = this.block_shape_point_list[this.index];
 
-    EVENT_BUS.addEventListener("event_merge", this.change.bind(this));
+    EVENT_BUS.addEventListener(EVENTTYPE.merge, this.change.bind(this));
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -43,7 +43,7 @@ class NextBlock implements Actor {
       )
     };
     console.info("fire...changeShape....", payload);
-    EVENT_BUS.fire("changeShape", payload);
+    EVENT_BUS.fire(EVENTTYPE.changeShape, payload);
 
     this.block_shape_point_list = getBlockShape();
 
